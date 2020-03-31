@@ -121,18 +121,18 @@ public class Speler {
 			}
 		}
 		for (int i=0;i>3 && i<kleuren.size();i++) {
-            String kleur = kleuren.get(i);
-            int aantal = kleurenMap.get(kleur);
-            switch(aantal) {
-            case 0 : break;
-            case 1 : score-=1; break;
-            case 2 : score-=3; break;
-            case 3 : score-=6; break;
-            case 4 : score-=10; break;
-            case 5 : score-=15; break;
-            default : score-=21; break;
-            }
-        }
+			String kleur = kleuren.get(i);
+			int aantal = kleurenMap.get(kleur);
+			switch(aantal) {
+			case 0 : break;
+			case 1 : score+=-1; break;
+			case 2 : score+=-3; break;
+			case 3 : score+=-6; break;
+			case 4 : score+=-10; break;
+			case 5 : score+=-15; break;
+			default : score+=-21; break;
+			}
+		}
 		// +2 voor elke Plus2 kaart niet vergeten!
 		//
 		score+=berekenPlus2Score();
