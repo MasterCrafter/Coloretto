@@ -1,0 +1,55 @@
+package gui;
+
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.Pane;
+
+public class WelkomScherm extends Pane 
+{
+	
+	private Button test;
+	private Label title;
+	
+	private Background achtergrond;
+	
+	//private ImageView ivImage = new ImageView(new Image(getClass().getResourceAsStream("/images/Naruto_sea.jpg")));	
+	
+	public WelkomScherm() {
+		
+	BuildGui();
+	
+	}
+	
+	public void BuildGui() {
+		BackgroundImage bgImg = new BackgroundImage(new Image(getClass().getResourceAsStream("/images/Naruto_sea.jpg")),
+				BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+		        BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+		        achtergrond = new Background(bgImg);
+		        setBackground(achtergrond);
+		        
+		test = new Button("start het spel");
+		test.setAlignment(Pos.CENTER);
+		
+		title = new Label("Welkom bij het spel Coloretto");
+		title.setScaleX(7);
+		title.setScaleY(7);
+		title.setLayoutX(700);
+		title.setLayoutY(50);
+		
+		test.setScaleX(2);
+		test.setScaleY(2);
+		test.setLayoutX(700);
+		test.setLayoutY(400);
+		
+		
+		this.getChildren().addAll(test,title);
+	}
+}
