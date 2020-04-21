@@ -1,8 +1,10 @@
-package ui; 
+package ui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import domein.Deck;
 import domein.Kaart;
@@ -21,8 +23,8 @@ public class ColorettoApplicatie {
 		this.spel = spel;
 	}
 
-	public void start() {
-	//public static void main(String[] args) {
+	// public void start() {
+	public static void main(String[] args) {
 		System.out.println("Welkom bij Coloretto!");
 
 		// We gebruiken 1 spel kaarten die door elkaar geschud zijn
@@ -66,19 +68,26 @@ public class ColorettoApplicatie {
 		// Nu begint de applicatie
 		//
 		ColorettoApplicatie app = new ColorettoApplicatie(spel);
-	
-		//boolean rijGekozen = false;
-			
-		//if() {
+
+		// boolean rijGekozen = false;
+
+		int x = 0;
+		int rondeteller = 0;
 		
+		Set<Speler> nogGeenRijGenomen = new HashSet<Speler>(spel.getSpelers()); //deze set bevat alle spelers
+		List<Rij> rondeRijen = new ArrayList<Rij>();
+
 		boolean doorlopenSpelers = true;
 		int aantalKeerSpelersDoorloopt = 1;
 		while (doorlopenSpelers) {
 
-			//System.out.println("Ronde nr " + aantalKeerSpelersDoorloopt + " begint.");
-			List<Rij> rondeRijen = new ArrayList<Rij>();
-
+			// System.out.println("Ronde nr " + aantalKeerSpelersDoorloopt + " begint.");
+			
 			for (Speler speler : spel.getSpelers()) {
+				if(!nogGeenRijGenomen.contains(speler))
+				{
+					continue;
+				}
 				System.out.println("===== Speler " + speler.getNaam() + " is aan zet ======");
 
 				// Keuze : A. Draw and place a card
@@ -118,7 +127,6 @@ public class ColorettoApplicatie {
 							Rij rij = spel.getRijen().get(rijNr - 1);
 							if (rij.isVol()) {
 								// Rij zit vol, verkeerde keuze
-								
 
 								System.err.println("Sorry, deze rij kan maximaal 3 kaarten bevatten");
 							} else {
@@ -130,48 +138,73 @@ public class ColorettoApplicatie {
 						}
 					}
 
-				} else //keuze b
+				} else // keuze b
 				{
 					// Speler neemt een rij kaart
 					//
 					boolean rijGekozen = false;
 					while (!rijGekozen)
-					if (spel.telNietLegeRijen() > 0 && rijGekozen == false) {
-						 {
-							System.out.println("Welke rij kaarten wil je nemen?");
-							spel.toonRijen();
-							int rijNr = vraagIntegerKeuze();
-							rijNr = app.controleerRijNr(rijNr);
-							if (rijNr >0) { //check of je groter getal dan aantal 
-								Rij rij = spel.getRijen().get(rijNr - 1);
-								if (rij.isLeeg()) {
-									// Rij is leeg, verkeerde keuze
-									//
-									System.err.println("Sorry, deze rij bevat geen kaarten");
-								} else {
-									// Voeg de kaarten in de rij aan de speler toe
-									//
-									speler.getKaarten().addAll(rij.getKaarten());
-									speler.sorteerKaartenPerKleur();
-									System.out
-											.println("De kaarten van deze speler (" + speler.getNaam() 
-											+ ") zijn nu:");
-									speler.toonSpelerKaarten();
+						if (spel.telNietLegeRijen() > 0 && rijGekozen == false) {
+							{
+								System.out.println("Welke rij kaarten wil je nemen?");
+								spel.toonRijen();
+								int rijNr = vraagIntegerKeuze();
+								rijNr = app.controleerRijNr(rijNr);
+								if (rijNr > 0) { // check of je groter getal dan aantal
+									//Rij rij = spel.getRijen().get(rijNr - 1);
+									Rij rij = spel.zoekRij(rijNr);
+									if(rij==null) {
+										System.out.println("Deze rij bestaat niet of is al genomen");
+									}
+									else
+									if (rij.isLeeg()) {
+										// Rij is leeg, verkeerde keuze
+										//
+										System.err.println("Sorry, deze rij bevat geen kaarten");
+									} else {
+										// Voeg de kaarten in de rij aan de speler toe
+										//
+										speler.getKaarten().addAll(rij.getKaarten());
+										speler.sorteerKaartenPerKleur();
+										System.out.println(
+												"De kaarten van deze speler (" + speler.getNaam() + ") zijn nu:");
+										speler.toonSpelerKaarten();
 
-									// Verwijder de kaarten uit de rij, zet de rij apart
-									//
-									rij.getKaarten().clear();
-									rondeRijen.add(rij);
-									spel.getRijen().remove(rij);
+										// Verwijder de kaarten uit de rij, zet de rij apart
+										//
+										rij.getKaarten().clear();
+										rondeRijen.add(rij);
+										spel.getRijen().remove(rij);
+										x += 1;
 
-									rijGekozen = true;
-									
-								}
-							}
+										rijGekozen = true;
+										
+										nogGeenRijGenomen.remove(speler);
+										if(nogGeenRijGenomen.isEmpty())
+										{
+											nogGeenRijGenomen.addAll(spel.getSpelers());
+											spel.getRijen().addAll(rondeRijen);
+											rondeRijen.clear();
+											spel.sorteerRondeRijen();
+											System.out.println("--------------------------------------------------------");
+											System.out.println("De volgende Ronde is begonnen alle rijen zijn leeg teruggeplaatst");
+											System.out.println("--------------------------------------------------------");
+										}
 
+									} // einde else
+								} // if
+
+							} // if
+						} else {
+							System.err.println("Sorry, er zijn geen rijen die kaarten bevatten");
 						}
-					} else {
-						System.err.println("Sorry, er zijn geen rijen die kaarten bevatten");
+
+					if (x == 4) {
+						rondeteller++;
+						System.out.println(" ");
+						System.out.println("Ronde nr " + rondeteller + " begint.");
+						System.out.println(" ");
+						rondeteller = 0;
 					}
 				}
 
@@ -180,21 +213,21 @@ public class ColorettoApplicatie {
 			// Op het einde van de ronde voegen we de ronde kaarten/rijen terug toe aan het
 			// spel
 			//
-			spel.getRijen().addAll(rondeRijen);
-			spel.sorteerRondeRijen();
+			//spel.getRijen().addAll(rondeRijen);
+			//spel.sorteerRondeRijen();
 
 			aantalKeerSpelersDoorloopt++;
 		} // ronde lus
-		
-		
-		//}//einde ronde ------------------------------------------------------------------------------------------------------------------
-		
-		
-		// Vraag aan elke speler die een joker heeft in welke kleur ze die willen veranderen
+
+		// einde ronde
+		// ------------------------------------------------------------------------------------------------------------------
+
+		// Vraag aan elke speler die een joker heeft in welke kleur ze die willen
+		// veranderen
 		//
 		for (Speler speler : spel.getSpelers()) {
 			for (Kaart joker : speler.zoekJokers()) {
-				System.out.print("Speler "+speler.getNaam()+" : kies de kleur waar je joker voor telt: ");
+				System.out.print("Speler " + speler.getNaam() + " : kies de kleur waar je joker voor telt: ");
 				String kleur = vraagStringKeuze();
 				speler.vervangJokerKaart(joker, kleur);
 			}
@@ -202,7 +235,8 @@ public class ColorettoApplicatie {
 
 		// Evalueer nu het resultaat en toon de scores
 		//
-		Speler winnaar = null;
+
+		List<Speler> winnaars = new ArrayList<Speler>();
 		int topScore = 0;
 		int aantalWinnaars = 0;
 		System.out.println("-------------------------------------------------------");
@@ -210,20 +244,27 @@ public class ColorettoApplicatie {
 		for (Speler speler : spel.getSpelers()) {
 			int score = speler.berekenScore();
 			System.out.println("Speler " + speler.getNaam() + " : " + score);
-			
-			if (score>=topScore ) {
-			/*zorgen dat het herkent wanneer er gelijkspel is
-			&& speler.berekenScore() != speler.berekenScore()*/
-				winnaar = speler;
+
+			if (score >= topScore) {
+				/*
+				 * zorgen dat het herkent wanneer er gelijkspel is && speler.berekenScore() !=
+				 * speler.berekenScore()
+				 */
 				topScore = score;
-				//aantalWinnaars +=1;
+			}
+		}
+		for (Speler speler : spel.getSpelers()) {
+			int score = speler.berekenScore();
+			if (score == topScore) {
+				winnaars.add(speler);
 			}
 		}
 		System.out.println("-------------------------------------------------------");
-		
-		//for(int teller = 0; teller < aantalWinnaars; teller ++){
-		System.out.println("DE WINNAAR IS : " + winnaar.getNaam() + " met score " + topScore);
-		//}
+
+		for (Speler winnaar : winnaars) {
+			System.out.println("DE WINNAAR IS : " + winnaar.getNaam() + " met score " + topScore);
+		}
+
 		System.out.println("-------------------------------------------------------");
 		System.out.println("Bedankt om te spelen!");
 		System.out.println("-------------------------------------------------------");
@@ -251,8 +292,8 @@ public class ColorettoApplicatie {
 	 */
 	private int controleerRijNr(int rij) {
 		int rijNr = rij;
-		if (rijNr < 1 || rijNr > spel.getRijen().size()) {
-			System.err.println("Sorry, kies een rij tussen 1 en " + spel.getRijen().size());
+		if (rijNr < 1 || rijNr > spel.getSpelers().size()) {
+			System.err.println("Sorry, kies een rij tussen 1 en " + spel.getSpelers().size());
 			rijNr = -1;
 		}
 		return rijNr;
