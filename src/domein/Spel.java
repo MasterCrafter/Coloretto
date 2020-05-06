@@ -103,6 +103,16 @@ public class Spel {
 		this.rijen = rijen;
 	}
 
+	public Rij zoekRij(int rijNr) {
+		for(Rij rij: rijen) {
+			if(rij.getNr()==rijNr)
+			{
+				return rij;
+			}
+		}
+		return null;
+	}
+
 	
 
 	
